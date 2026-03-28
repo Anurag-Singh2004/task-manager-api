@@ -12,6 +12,10 @@ mongoose.connect(process.env.MONGODB_URI)
   .then(()=> console.log('MongoDB connected'))
   .catch(err=> console.log(err));
 
+
+const authRoutes = require('./routes/auth');
+app.use('/auth', authRoutes);
+
 //Test Route
 app.get('/',(req,res)=>{
   res.json({message: 'Task Manager API is running'});
@@ -27,7 +31,7 @@ app.use((req,res,next)=>{
 //Error Handler
 app.use((err,req,res,next)=>{
   console.error(err.message);
-  res.statusCode(err.statusCode || 500).json({
+  res.status(err.statusCode || 500).json({
     success: false,
     error: err.message || 'Internal Server Error',
     stack: process.env.NODE_ENV === 'development' ? err.stack :undefined
