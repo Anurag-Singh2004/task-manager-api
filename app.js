@@ -14,7 +14,10 @@ mongoose.connect(process.env.MONGODB_URI)
 
 
 const authRoutes = require('./routes/auth');
+const projectRoutes = require("./routes/projects");
+
 app.use('/auth', authRoutes);
+app.use("/projects", projectRoutes);
 
 //Test Route
 app.get('/',(req,res)=>{
