@@ -5,6 +5,37 @@ const Task = require("../models/Task");
 const Project = require("../models/Project");
 const protect = require("../middleware/auth");
 
+const { body } = require("express-validator");
+const validate = require("../middleware/validate");
+
+const taskRules = [
+  body("title")
+    .notEmpty()
+    .withMessage("Title is required")
+    .isLength({ min: 2 })
+    .withMessage("Title must be at least 2 characters"),
+  body("status")
+    .optional()
+    .isIn(["todo", "in-progress", "done"])
+    .withMessage("Status must be todo, in-progress or done"),
+  body("priority")
+    .optional()
+    .isIn(["low", "medium", "high"])
+    .withMessage("Priority must be low, medium or high"),
+  body("dueDate")
+    .optional()
+    .isISO8601()
+    .withMessage("Please provide a valid date"),
+];
+
+const statusRules = [
+  body("status")
+    .notEmpty()
+    .withMessage("Status is required")
+    .isIn(["todo", "in-progress", "done"])
+    .withMessage("Status must be todo, in-progress or done"),
+];
+
 async function getProjectAndCheckAccess(projectId, userId){
   const project = await Project.findById(projectId);
   if(!project) return {error: 'Project not found', status: 404};
@@ -41,7 +72,7 @@ router.get('/',protect,async function(req,res,next){
 });
 
 //POST create task
-router.post('/', protect, async function(req,res,next){
+router.post('/', protect,taskRules, validate, async function(req,res,next){
   try{
     if(!mongoose.Types.ObjectId.isValid(req.params.id)){
       return res.status(400).json({ success: false, error: 'Invalid project id' });
@@ -94,7 +125,7 @@ router.get('/:taskId', protect, async function(req,res,next){
 });
 
 // Put update task
-router.put('/:taskId', protect, async function(req,res,next){
+router.put('/:taskId', protect,taskRules, validate, async function(req,res,next){
   try{
     if(!mongoose.Types.ObjectId.isValid(req.params.id)){
       return res.status(400).json({ success: false, error: 'Invalid project id' });
@@ -127,7 +158,7 @@ router.put('/:taskId', protect, async function(req,res,next){
 });
 
 //Patch update task status only
-router.patch('/:taskId/status', protect, async function(req,res,next){
+router.patch('/:taskId/status', protect,statusRules, validate, async function(req,res,next){
   try {
     if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
       return res
