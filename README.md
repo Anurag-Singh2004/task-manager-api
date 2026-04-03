@@ -4,7 +4,7 @@ A production-ready REST API built with Node.js, Express, MongoDB and JWT Authent
 
 ## 🌐 Live URL
 ```
-https://task-manager-api.onrender.com
+https://task-manager-api-7bwf.onrender.com
 ```
 
 ## 🛠️ Tech Stack
