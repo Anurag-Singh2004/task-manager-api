@@ -4,6 +4,17 @@ const mongoose = require('mongoose');
 const Project = require('../models/Project');
 const protect = require('../middleware/auth');
 
+const { body } = require("express-validator");
+const validate = require("../middleware/validate");
+
+const projectRules = [
+  body("title")
+    .notEmpty()
+    .withMessage("Title is required")
+    .isLength({ min: 2 })
+    .withMessage("Title must be at least 2 characters"),
+];
+
 router.get('/', protect, async function(req,res,next){
   try{
     const projects = await Project.find({
@@ -24,7 +35,7 @@ router.get('/', protect, async function(req,res,next){
   }
 });
 
-router.post('/',protect, async function(req,res,next){
+router.post('/',protect,projectRules, validate, async function(req,res,next){
   try{
     const {title, description} = req.body;
     const project = await Project.create({
@@ -81,7 +92,7 @@ router.get('/:id',protect,async function(req,res,next){
 });
 
 //put update project - owner only
-router.put('/:id',protect, async function (req,res,next){
+router.put('/:id',protect,projectRules, validate, async function (req,res,next){
   try{
     if(!mongoose.Types.ObjectId.isValid(req.params.id)){
       return res.status(400).json({

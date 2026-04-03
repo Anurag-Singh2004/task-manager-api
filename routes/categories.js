@@ -5,6 +5,17 @@ const Category = require("../models/Category");
 const Project = require("../models/Project");
 const protect = require("../middleware/auth");
 
+const { body } = require("express-validator");
+const validate = require("../middleware/validate");
+
+const categoryRules = [
+  body("name")
+    .notEmpty()
+    .withMessage("Name is required")
+    .isLength({ min: 2 })
+    .withMessage("Name must be at least 2 characters"),
+];
+
 //helper- check if user is owner or member
 async function getProjectAndCheckAccess(projectId, userId){
   const project = await Project.findById(projectId);
@@ -45,7 +56,7 @@ router.get('/', protect, async function(req,res,next){
 });
 
 // POST create category — owner only
-router.post('/', protect, async function(req, res, next) {
+router.post('/', protect,categoryRules, validate, async function(req, res, next) {
   try {
     if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
       return res.status(400).json({ success: false, error: 'Invalid project id' });

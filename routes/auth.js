@@ -1,7 +1,36 @@
 const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
+const { body } = require("express-validator");
 const User = require('../models/User');
+const validate = require("../middleware/validate");
+
+const registerRules = [
+  body("name")
+    .notEmpty()
+    .withMessage("Name is required")
+    .isLength({ min: 2 })
+    .withMessage("Name must be at least 2 characters"),
+  body("email")
+    .notEmpty()
+    .withMessage("Email is required")
+    .isEmail()
+    .withMessage("Please provide a valid email"),
+  body("password")
+    .notEmpty()
+    .withMessage("Password is required")
+    .isLength({ min: 6 })
+    .withMessage("Password must be at least 6 characters"),
+];
+
+const loginRules = [
+  body("email")
+    .notEmpty()
+    .withMessage("Email is required")
+    .isEmail()
+    .withMessage("Please provide a valid email"),
+  body("password").notEmpty().withMessage("Password is required"),
+];
 
 //generate tokens
 function generateAccessToken(id){
@@ -15,7 +44,7 @@ function generateRefreshToken(id){
 }
 
 //Register
-router.post('/register', async function(req,res,next){
+router.post('/register',registerRules, validate, async function(req,res,next){
   try{
     const {name, email, password} = req.body;
     
@@ -46,7 +75,7 @@ await User.findByIdAndUpdate(user._id, { refreshToken });
 });
 
 //Login
-router.post('/login', async function(req,res,next){
+router.post('/login',loginRules, validate, async function(req,res,next){
   try{
     const {email, password} = req.body;
 
