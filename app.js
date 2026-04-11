@@ -1,8 +1,20 @@
 require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
-
+const cors = require('cors');
 const app = express();
+
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5173", // local dev frontend
+      "http://localhost:3000", // just in case
+    ],
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  }),
+);
 
 // Middleware
 app.use(express.json());
