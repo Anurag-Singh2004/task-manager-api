@@ -391,6 +391,24 @@ task-manager-api/
 └── package.json
 ```
 
+## Recent Updates
+
+### Bug Fixes
+- Fixed null members causing 500 error on project access
+- Fixed add member endpoint to accept email instead of userId
+
+### API Changes
+**POST /projects/:id/members**
+- Now accepts `email` instead of `userId` in request body
+- Returns 404 if user with email not found
+
+**Request body:**
+\`\`\`json
+{
+  "email": "member@example.com"
+}
+\`\`\`
+
 ---
 
 ## 👨‍💻 Author
