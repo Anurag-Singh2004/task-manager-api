@@ -40,7 +40,7 @@ async function getProjectAndCheckAccess(projectId, userId){
   const project = await Project.findById(projectId);
   if(!project) return {error: 'Project not found', status: 404};
 
-  const isOwner = project.owner.toString() === userId.toString();
+  const isOwner = (project.owner._id || project.owner).toString() === userId.toString();
   const isMember = project.members.some(m=> (m._id || m).toString() === userId.toString());
 
   if(!isOwner && !isMember) return { error: "Not authorized to access this project", status: 403 };
