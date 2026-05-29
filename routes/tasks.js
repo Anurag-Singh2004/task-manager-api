@@ -38,14 +38,10 @@ const statusRules = [
 
 async function getProjectAndCheckAccess(projectId, userId){
   const project = await Project.findById(projectId);
-  console.log('project:', project)        // ADD THIS
-  console.log('project.owner:', project?.owner)  // ADD THIS
-  console.log('userId:', userId)          // ADD THIS
-  
   if(!project) return {error: 'Project not found', status: 404};
 
   const isOwner = (project.owner._id || project.owner).toString() === userId.toString();
-  const isMember = project.members.some(m=> (m._id || m).toString() === userId.toString());
+  const isMember = project.members.filter(m => m !== null).some(m=> (m._id || m).toString() === userId.toString());
 
   if(!isOwner && !isMember) return { error: "Not authorized to access this project", status: 403 };
 

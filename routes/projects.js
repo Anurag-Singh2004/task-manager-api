@@ -3,6 +3,7 @@ const router = express.Router();
 const mongoose = require('mongoose');
 const Project = require('../models/Project');
 const protect = require('../middleware/auth');
+const User = require('../models/User');
 
 const { body } = require("express-validator");
 const validate = require("../middleware/validate");
@@ -192,15 +193,21 @@ router.post('/:id/members', protect, async function(req,res,next){
       });
     }
 
-    const {userId} = req.body;
+    const {email} = req.body;
 
-    if(project.members.includes(userId)){
-      return res.status(400).json({
-        success: false,
-        error: 'User is already a member'
-      });
+    const user = await User.findOne({email});
+
+    if(!user) return res.status(404).json({
+      success: false,
+      error: 'No user found with that email'
+    })
+
+    //check already a member
+    if(project.members.includes(user._id)){
+      return res.status(400).json({success:false, error: 'Already a member'})
     }
-    project.members.push(userId);
+
+    project.members.push(user._id);
     await project.save();
 
     res.status(200).json({
