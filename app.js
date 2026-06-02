@@ -9,6 +9,7 @@ app.use(
     origin: [
       "http://localhost:5173", // local dev frontend
       "http://localhost:3000", // just in case
+      'https://task-manager-frontend-sigma-wine.vercel.app'
     ],
     credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
